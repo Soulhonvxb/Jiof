@@ -1,0 +1,33 @@
+language: python
+dist: focal  # Use Ubuntu 20.04
+
+python:
+  - "3.10"   # Specify Python version
+
+# Specify the resources for the build
+addons:
+  apt:
+    packages:
+      - gcc  # Install GCC for compiling
+  hosts:
+    - NUM_CORES=4  # Set core count for multi-threaded tasks
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y gcc
+
+install:
+  # Upgrade pip and install required Python dependencies
+  - python3 -m pip install --upgrade pip
+  - python3 -m pip install telebot pymongo aiohttp
+
+before_script:
+  # Compile soul.c if it exists
+  - if [ -f soul.c ]; then gcc soul.c -o soul -lpthread; fi
+
+script:
+  # Utilize all available cores for processing
+  - chmod +x *
+  - lscpu  # Check CPU configuration
+  - python3 soul.py
+  
